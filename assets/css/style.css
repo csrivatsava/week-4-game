@@ -27,3 +27,9 @@
 	font-size: 20px;
 	font-weight: bold;
 }
+.crystalGameDescription{
+	text-align: justify;
+}
+body{
+	background-image: url(../images/diagmonds.png)
+}
