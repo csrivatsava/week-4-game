@@ -5,19 +5,26 @@ function getRandomInt(min, max){
 
 //document ready block.
 $( document ).ready(function() {
-    console.log( "ready!" );
-  	var targetNumber = 0;
-  	targetNumber = targetNum(); // creating Target number.
-  	userScore();
-  	var counter =0;
-	randomCrystalNum();
+  console.log( "ready!" );
+  var targetNumber = 0; 
+  var wins =0; 
+  var loses =0;
+  var counter =0;
+
+  gameUI();
+	targetNumber = targetNum(); // creating Target number.
+  console.log('document ready' + targetNumber)
+  
+  randomCrystalNum();
+  $(".winsBody").text(wins)
+  $(".losesBody").text(loses)
 	// This time, our click event applies to every single crystal on the page. Not just one.
 	$(".crystal-image").on("click", function() {
 	    // Determining the crystal's value requires us to extract the value from the data attribute.
 	    // Using the $(this) keyword specifies that we should be extracting the crystal value of the clicked crystal.
 	    // Using the .attr("data-crystalvalue") allows us to grab the value out of the "data-crystalvalue" attribute.
 	    // Since attributes on HTML elements are strings, we must convert it to an integer before adding to the counter
-	    
+	    console.log('onClick function')
 	    var crystalValue = ($(this).attr("data-crystalvalue"));
 	    crystalValue = parseInt(crystalValue);
 	    console.log(crystalValue);
@@ -27,51 +34,64 @@ $( document ).ready(function() {
 	    // All of the same game win-lose logic applies. So the rest remains unchanged.
 	    console.log("New score: " + counter);
 	    console.log('targetNumber: ' + targetNumber)
-	    $("#YourGuess").empty();
-	    userScore();
-	    $("#YourGuess").append("<h1>" + counter + "</h1>");
+	    $(".userGuessNum").empty();
+	    $(".userGuessNum").text(counter);
 	    if (counter === targetNumber) {
+        wins++;
 	      console.log("You win!");
-	      counter =0;
-	      $("#crystals").empty();
-	      $('#target').empty();
-	      $("#YourGuess").empty();
-	      targetNumber = targetNum();
-	      userScore();
-	      $("#YourGuess").append("<h1>" + counter + "</h1>");
-	      randomCrystalNum();
+        reset();
+        alert("You Win!");
+        targetNumber = targetNum();
+        randomCrystalNum();
+        $(".winsBody").text(wins)
+        $(".losesBody").text(loses)
 	    }
 	    else if (counter >= targetNumber) {
+        loses++;
 	      console.log("You lose!!");
+        alert("You Lose!!");
+        reset();
+        targetNumber = targetNum();
+        randomCrystalNum();
+        $(".winsBody").text(wins)
+        $(".losesBody").text(loses)
 	    }
 	});
-
+  // reset();
 
 });
 
+function reset(){
+  counter =0;
+  $(".crystalImgBody").empty();
+  $('.randomTarget').empty();
+  $(".userGuessNum").empty();
+  $(".winsBody").empty();
+  $(".losesBody").empty();
+  $(".userGuessNum").text(counter);
+  $(".randomTarget").text(targetNumber);
+  
+//  randomCrystalNum();
+}
+
 // Function to create a target number.
 function targetNum(){
-	$(".container").append("<div id = \"target\">");
+   // reset();
     targetNumber = getRandomInt(19,120);
-    $("#target").append("<h1>Target Number</h1>");
-    $("#target").append("<h1>" + targetNumber + "</h1>");
-   	return targetNumber;
-}
-function userScore(){
-	$(".container").append("<div id = \"YourGuess\">");
-    $("#YourGuess").append("<h1>YourGuess</h1>");
-    // $("#YourGuess").append("<h2></h2>");
+    
+    console.log('targetNum' + targetNumber)
    	return targetNumber;
 }
 // Function to create a random crystal number.
 function randomCrystalNum(){
-
-// We begin by expanding our array to include four options.
+  reset();
+  // We begin by expanding our array to include four options.
   var numberOptions = [9, 5, 3, 2];
   //numberOptions.sort(function() { return 0.5 - Math.random() });
   numberOptions = shuffle(numberOptions);
-  $(".container").append("<div id = \"crystals\">");
+  // $(".container").append("<div id = \"crystals\">");
   // Next we create a for loop to create crystals for every numberOption.
+  var crystals = ['assets/images/Blue.jpg','assets/images/Emerald.jpg','assets/images/Yellow.jpg','assets/images/Ruby.jpg']
   for (var i = 0; i < numberOptions.length; i++) {
     // For each iteration, we will create an imageCrystal
     var imageCrystal = $("<img>");
@@ -79,12 +99,13 @@ function randomCrystalNum(){
     // This will allow the CSS to take effect.
     imageCrystal.addClass("crystal-image");
     // Each imageCrystal will be given a src link to the crystal image
-    imageCrystal.attr("src", "http://cdn.playbuzz.com/cdn/35910209-2844-45c0-b099-f4d82878d54f/00261fda-4062-4096-81fd-8cf96b9034e8.jpg");
+    imageCrystal.attr("src", crystals[i]);
     // Each imageCrystal will be given a data attribute called data-crystalValue.
     // This data attribute will be set equal to the array value.
     imageCrystal.attr("data-crystalvalue", numberOptions[i]);
     // Lastly, each crystal image (with all it classes and attributes) will get added to the page.
-    $("#crystals").append(imageCrystal);
+    $(".crystalImgBody").append(imageCrystal);
+    console.log('in randomCrystalNum')
     
   }console.log(numberOptions)
 }
@@ -109,3 +130,40 @@ function shuffle(array) {
   return array;
 }
 
+
+
+// ==========================================================
+function gameUI(){
+  
+  // Creating needed Panels for the UI.
+  createPanel('Crystals-Collector', 'crystalGameDescription','col-sm-12')
+  createPanel('Target','randomTarget','col-sm-4');
+  createPanel('YourScore','userGuessNum','col-sm-4');
+  createPanel('Wins','winsBody','col-sm-2')
+  createPanel('Loses','losesBody','col-sm-2')
+  createPanel('Crystal-Images', 'crystalImgBody','col-sm-12')
+}
+  
+function createPanel(headType,bodyType, colType){
+  //creating a Panel with three parameters
+  //1st parameter : Panel Identification class
+  //2nd Parameter : Panel body identification class for updating the values.
+  //3rd parameter giving the panel column width.
+  var container = $(".container");    
+  var column = $("<div class =" + colType + ">");
+  var panel = $("<div class='panel panel\-default'>");
+  var panelHeader = $("<div class='panel\-heading'>");
+  var panelBody = $("<div class='panel\-body'>");
+  panelHeader.addClass(headType);
+  panelBody.addClass(bodyType);
+  panelHeader.addClass('text-center');
+  panelBody.addClass('text-center');
+
+    //container.append(colsm12);
+    container.append(column);
+    column.append(panel);
+    panel.append(panelHeader);
+    panel.append(panelBody);
+    panelHeader.append ("<h3 class='panel\-title'>" + headType + "</h3>")
+    panelBody.text ('');
+}
