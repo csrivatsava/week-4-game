@@ -1,3 +1,5 @@
+// While this comment syntax will still work in JS files. It's an uncommon practice and
+// you should generally stick to the `//` or `/*  */` syntax.
 <!-- Random integer Number generation given max and min values-->
 function getRandomInt(min, max){ 
 	return Math.floor(Math.random()* (max - min +1)) +min; 
@@ -5,7 +7,9 @@ function getRandomInt(min, max){
 
 //document ready block.
 $( document ).ready(function() {
-  console.log( "ready!" );
+  // console.log's are awesome for validating your work when developing a program
+  // but it's generally best practice to remove them from production code
+  // console.log( "ready!" );
   var targetNumber = 0; 
   var wins =0; 
   var loses =0;
@@ -34,7 +38,7 @@ $( document ).ready(function() {
 	    $(".userGuessNum").text(counter);
 	    if (counter === targetNumber) {
         wins++;
-	      console.log("You win!");
+	      // console.log("You win!");
         reset();
         alert("You Win!");
         targetNumber = targetNum();
@@ -45,7 +49,7 @@ $( document ).ready(function() {
 	    }
 	    else if (counter >= targetNumber) {
         loses++;
-	      console.log("You lose!!");
+	      // console.log("You lose!!");
         alert("You Lose!!");
         reset();
         targetNumber = targetNum();
@@ -57,9 +61,16 @@ $( document ).ready(function() {
 	});
 });
 
+// I really like that you broke up your game logic into functions.
+// I would suggest that you move all of these into the document ready 
+// block above though so that they aren't living on the global scope.
 
 // function to reset.
 function reset(){
+  // In this case, since you aren't declaring counter as a variable here
+  // it ends up being placed on the global scope and will always remain at 0
+  // while some of your other game logic updates the counter variable you 
+  // declared in the document ready block above.
   counter =0;
  
   $('.randomTarget').empty();
@@ -73,6 +84,9 @@ function reset(){
 // Function to create a target number.
 function targetNum(){
    // reset();
+   // this targetNumber is living on the global scope which is why you're having to
+   // also return the value and assign it to the targetNumber you've declared within
+   // the document ready block. 
     targetNumber = getRandomInt(19,120);
    	return targetNumber;
 }
@@ -80,6 +94,12 @@ function targetNum(){
 function randomCrystalNum(){
   reset();
   // We begin by expanding our array to include four options.
+
+  // Going this route for assigning random number values to the crystals will result
+  // in only ever having the below 4 values assigned to the crystals (albeit in a random order).
+  // A somewhat simpler approach would be to use your `getRandomInt` function
+  // to assign a random value to each of your four crystal elements.
+
   var numberOptions = [9, 5, 3, 2];
   numberOptions = shuffle(numberOptions);
  
